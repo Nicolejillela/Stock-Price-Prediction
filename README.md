@@ -1,7 +1,9 @@
 # Stock-Price-Prediction
 
+
 One of the most prominent use cases of machine learning is “Fintech” (Financial Technology for those who aren't buzz-word aficionados); a large subset of which is in the stock market. Financial theorists, and data scientists for the better part of the last 50 years, have been employed to make sense of the marketplace in order to increase return on investment. However, due to the multidimensional nature of the problem, the scale of the system, and inherent variation with time, it has been an overwhelmingly tough challenge for humans to solve, even with the assistance of conventional data analytics tools. However, with the onset of recent advancements in machine learning applications, the field has been evolving to utilize non-deterministic solutions the “learn” what is going on in order to make more accurate predictions.
 
+In this article I will demonstrate a simple stock price prediction model and exploring how “tuning” the model affects the results. This article is intended to be easy to follow, as it is an introduction, so more advanced readers may need to bear with me.
 
 Step 1: Choosing the data
 
@@ -62,6 +64,7 @@ dates = stock_data[:, 0].reshape(-1, 1)
 mpl.plot(dates[:, 0], prices[:, 0])
 mpl.show()
 
+ 
 You should get a nice graph that looks like this:
 
 Note, that the scale is no longer in dollars on the y-axis and those arbitrary integer-date values on the x-axis. We have scaled the data down to make the learning process more effective. Try writing some code to return the scale of the y-axis back to dollars and the x-axis to years!
@@ -78,6 +81,7 @@ layers = [('F', hidden), ('AF', 'tanh'), ('F', hidden), ('AF', 'tanh'), ('F', hi
 mlpr = ANNR([input], layers, batchSize = 256, maxIter = 20000, tol = 0.2, reg = 1e-4, verbose = True)
 
 We have now initialized the model and are ready to train!
+
 Step 4: Training the Model
 
 #number of days for the hold-out period used to access progress
@@ -85,6 +89,9 @@ holdDays = 5
 totalDays = len(dates)
 #fit the model to the data "Learning"
 mlpr.fit(dates[0:(totalDays-holdDays)], prices[0:(totalDays-holdDays)])
+
+
+ 
 
 Once the training is complete, we can execute the following commands to see how we did.
 
@@ -94,6 +101,8 @@ pricePredict = mlpr.predict(dates)
 mpl.plot(dates, prices)
 mpl.plot(dates, pricePredict, c='#5aa9ab')
 mpl.show()
+
+ 
 
 Not too bad! But we can do better.
 
@@ -118,6 +127,8 @@ holdDays = 5
 totalDays = len(dates)
 mlpr2.fit(dates[0:(totalDays-holdDays)], prices[0:(totalDays-holdDays)])
 
+ 
+
 Once it has finished training:
 
 pricePredict2 = mlpr2.predict(dates)
@@ -126,6 +137,7 @@ mpl.plot(dates, pricePredict, c='#5aa9ab')
 mpl.plot(dates, pricePredict2, c='#8B008B')
 mpl.show()
 
+ 
 Looking better! As you can see, lovering the error tolerance… well… lowered the error. So you might be wondering “why not just set the error to a really small number?” and that would be a great question. Go ahead and try it for yourself, re-execute the code you just ran with the tolerance set at .05. What you will observe is that the maximum number of iterations you use will stop the execution before it reached the desired level of error. Ok then, why not just increase the maximum number of iterations? Well, the problem lies in the given model parameters. The model itself has limitations, the lowest achievable error for the model we constructed may only be .8 (I have not checked exactly for this for this model). In this situation, it does not matter how many more iterations you add, the structure of the model will not yield better results, no matter how many iterations are run. It is simply capped out.
 
 The next logical question to ask here would be “how can we change the model to achieve greater error?” and that is what we are going to explore!
@@ -151,7 +163,5 @@ layers = [('F', hidden), ('AF', 'tanh'), ('F', hidden), ('AF', 'tanh'), ('F', hi
 Or perhaps you want a different number of neurons at each hidden layer, tapering them down is a common method. The example below tapers from 100 down to 25 nodes before the output:
 
 layers = [('F', 100), ('AF', 'tanh'), ('F', 50), ('AF', 'tanh'), ('F', 25), ('AF', 'tanh'), ('F', output)]
-
-So, there you have it! An easy introduction to machine learning and neural networks that you can do at home for free in about an hour!
 
 
